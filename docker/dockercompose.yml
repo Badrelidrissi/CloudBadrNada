@@ -1,0 +1,14 @@
+version: '3.8'
+services:
+  signing:
+    build: ./signing
+    ports:
+      - "5000:5000"
+  device-management:
+    build: ./device-management
+    ports:
+      - "5001:5001"
+  monitoring:
+    build: ./monitoring
+    ports:
+      - "5002:5002"
