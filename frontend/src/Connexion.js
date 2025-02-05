@@ -1,12 +1,12 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom'; // Import de useNavigate
+import { useNavigate } from 'react-router-dom'; 
 
 function Connexion() {
   const [email, setEmail] = useState('');
   const [motDePasse, setMotDePasse] = useState('');
   const [erreur, setErreur] = useState('');
   const [loading, setLoading] = useState(false);
-  const navigate = useNavigate(); // Hook pour la navigation
+  const navigate = useNavigate(); 
 
   const validateInputs = () => {
     if (!email || !motDePasse) {
@@ -50,11 +50,9 @@ function Connexion() {
       const result = await response.json();
       console.log('Connexion réussie !', result);
 
-      // Stockage du token dans localStorage
       localStorage.setItem('token', result.token);
 
-      // Redirection vers la page DeviceManagement
-      navigate('/device-management'); // Utilisation de useNavigate pour rediriger
+      navigate('/DeviceManagement'); 
     } catch (error) {
       setErreur(error.message || 'Une erreur s\'est produite. Veuillez réessayer.');
     } finally {

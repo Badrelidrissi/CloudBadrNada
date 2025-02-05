@@ -6,11 +6,10 @@ import os
 import jwt
 import datetime
 import json
-import pika  # Assurez-vous d'avoir installé pika pour RabbitMQ
+import pika  
 
 app = Flask(__name__)
 
-# Configuration de la base de données PostgreSQL
 db_user = os.getenv('DB_USER', 'postgres')
 db_password = os.getenv('DB_PASSWORD', 'badr')  
 db_host = os.getenv('DB_HOST', 'localhost')
@@ -23,7 +22,7 @@ app.config['SECRET_KEY'] = 'supersecretkey'
 db = SQLAlchemy(app)
 CORS(app)
 
-# Configuration de RabbitMQ
+
 RABBITMQ_CONFIG = {
     'host': 'localhost',
     'port': 5672,
@@ -31,7 +30,6 @@ RABBITMQ_CONFIG = {
     'password': 'guest'
 }
 
-# Modèle Utilisateur
 class Utilisateur(db.Model):
     __tablename__ = 'utilisateurs'
     
@@ -39,7 +37,7 @@ class Utilisateur(db.Model):
     email = db.Column(db.String(255), unique=True, nullable=False)
     mot_de_passe = db.Column(db.String(255), nullable=False)
 
-# Modèle Device
+
 class Device(db.Model):
     __tablename__ = 'devices'
     
@@ -50,11 +48,9 @@ class Device(db.Model):
     created_at = db.Column(db.TIMESTAMP, default=datetime.datetime.utcnow)
     updated_at = db.Column(db.TIMESTAMP, default=datetime.datetime.utcnow, onupdate=datetime.datetime.utcnow)
 
-# Créer les tables dans la base de données
 with app.app_context():
     db.create_all()
 
-# Fonction pour publier des événements vers RabbitMQ
 def publish_device_event(device_id, event_type):
     try:
         connection = pika.BlockingConnection(pika.ConnectionParameters(host=RABBITMQ_CONFIG['host']))
@@ -64,9 +60,8 @@ def publish_device_event(device_id, event_type):
         channel.basic_publish(exchange='', routing_key='device_events', body=message)
         connection.close()
     except Exception as e:
-        print(f"❌ Erreur lors de l'envoi du message à RabbitMQ : {e}")
+        print(f"Erreur lors de l'envoi du message à RabbitMQ : {e}")
 
-# 🔹 ROUTE D'INSCRIPTION
 @app.route("/api/inscription", methods=["POST"])
 def inscription():
     try:
@@ -83,11 +78,7 @@ def inscription():
 
         if Utilisateur.query.filter_by(email=email).first():
             return jsonify({"message": "Cet email est déjà utilisé"}), 400
-
-        # Hachage du mot de passe
         hashed_password = bcrypt.hashpw(mot_de_passe.encode('utf-8'), bcrypt.gensalt())
-
-        # Création de l'utilisateur
         new_user = Utilisateur(email=email, mot_de_passe=hashed_password.decode('utf-8'))
         db.session.add(new_user)
         db.session.commit()
@@ -97,7 +88,7 @@ def inscription():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# 🔹 ROUTE DE CONNEXION
+
 @app.route("/api/connexion", methods=["POST"])
 def connexion():
     try:
@@ -113,7 +104,6 @@ def connexion():
         if not utilisateur or not bcrypt.checkpw(mot_de_passe.encode('utf-8'), utilisateur.mot_de_passe.encode('utf-8')):
             return jsonify({"message": "Email ou mot de passe incorrect"}), 401
 
-        # Génération du token JWT
         token = jwt.encode(
             {"email": utilisateur.email, "exp": datetime.datetime.utcnow() + datetime.timedelta(hours=2)},
             app.config['SECRET_KEY'], algorithm="HS256"
@@ -124,7 +114,6 @@ def connexion():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# 🔹 ROUTE POUR AJOUTER UN DISPOSITIF
 @app.route("/api/devices", methods=["POST"])
 def add_device():
     try:
@@ -136,12 +125,11 @@ def add_device():
         if not name or not type or not status:
             return jsonify({"message": "Tous les champs sont requis"}), 400
 
-        # Création du dispositif
+
         new_device = Device(name=name, type=type, status=status)
         db.session.add(new_device)
         db.session.commit()
 
-        # Publier un événement de création de dispositif
         publish_device_event(new_device.id, 'device_created')
 
         return jsonify({"message": "Dispositif ajouté avec succès", "device_id": new_device.id}), 201
@@ -149,7 +137,6 @@ def add_device():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# 🔹 ROUTE POUR RÉCUPÉRER TOUS LES DISPOSITIFS
 @app.route("/api/devices", methods=["GET"])
 def get_devices():
     try:
@@ -168,7 +155,7 @@ def get_devices():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# 🔹 ROUTE POUR RÉCUPÉRER LES DÉTAILS D'UN DISPOSITIF
+
 @app.route("/api/devices/<int:device_id>", methods=["GET"])
 def get_device(device_id):
     try:
@@ -189,7 +176,7 @@ def get_device(device_id):
     except Exception as e:
         return jsonify({"error": str(e)}), 500
 
-# 🔹 ROUTE POUR SUPPRIMER UN DISPOSITIF
+
 @app.route("/api/devices/<int:device_id>", methods=["DELETE"])
 def delete_device(device_id):
     try:
@@ -198,11 +185,10 @@ def delete_device(device_id):
         if not device:
             return jsonify({"message": "Dispositif non trouvé"}), 404
 
-        # Supprimer le dispositif
+
         db.session.delete(device)
         db.session.commit()
 
-        # Publier un événement de suppression de dispositif
         publish_device_event(device_id, 'device_deleted')
 
         return jsonify({"message": "Dispositif supprimé avec succès"}), 200

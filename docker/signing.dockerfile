@@ -1,6 +1,3 @@
 FROM python:3.9
-WORKDIR /app
-COPY requirements.txt .
-RUN pip install -r requirements.txt
-COPY . .
-CMD ["python", "app.py"]
+WORKDIR /app  # Assure-toi que l'environnement de travail est bien défini
+CMD ["python", "microservices/back-end/serveur.py"]

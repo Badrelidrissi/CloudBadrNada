@@ -20,7 +20,6 @@ const DeviceManagement = () => {
             const data = await response.json();
             setDevices(data);
         } catch (error) {
-            console.error('❌ Erreur lors de la récupération des dispositifs:', error);
             setError('Impossible de récupérer les dispositifs.');
         }
     };
@@ -39,7 +38,6 @@ const DeviceManagement = () => {
             setNewDevice({ name: '', type: '', status: '' });
             fetchDevices();
         } catch (error) {
-            console.error('❌ Erreur lors de l\'ajout du dispositif:', error);
             setError('Impossible d\'ajouter le dispositif.');
         }
     };
@@ -52,7 +50,6 @@ const DeviceManagement = () => {
             const data = await response.json();
             setSelectedDevice(data);
         } catch (error) {
-            console.error('❌ Erreur lors de la récupération des détails du dispositif:', error);
             setError('Impossible d\'afficher les détails.');
         }
     };
@@ -68,7 +65,6 @@ const DeviceManagement = () => {
             fetchDevices();
             setSelectedDevice(null);
         } catch (error) {
-            console.error('❌ Erreur lors de la suppression du dispositif:', error);
             setError('Impossible de supprimer le dispositif.');
         }
     };
@@ -86,7 +82,6 @@ const DeviceManagement = () => {
 
             fetchDevices();
         } catch (error) {
-            console.error('❌ Erreur lors de la mise à jour du dispositif:', error);
             setError('Impossible de mettre à jour le dispositif.');
         }
     };
@@ -104,33 +99,44 @@ const DeviceManagement = () => {
             {error && <p style={{ color: 'red' }}>{error}</p>}
 
             <form onSubmit={handleAddDevice} className="device-form">
-                <h2>Ajouter un Dispositif</h2>
+                <h2>Ajouter un appareil</h2>
                 <input
                     type="text"
-                    placeholder="Nom du dispositif"
+                    placeholder="Nom de l'appareil"
                     value={newDevice.name}
                     onChange={(e) => setNewDevice({ ...newDevice, name: e.target.value })}
                     required
                 />
+                      <input
+                    type="text"
+                    placeholder="Marque"
+                    value={newDevice.marque}
+                    onChange={(e) => setNewDevice({ ...newDevice, marque: e.target.value })}
+                    required
+                />
                 <input
                     type="text"
-                    placeholder="Type de dispositif"
+                    placeholder="Type de l'appareil"
                     value={newDevice.type}
                     onChange={(e) => setNewDevice({ ...newDevice, type: e.target.value })}
                     required
                 />
-                <input
-                    type="text"
-                    placeholder="Statut du dispositif"
-                    value={newDevice.status}
-                    onChange={(e) => setNewDevice({ ...newDevice, status: e.target.value })}
-                    required
-                />
+                <select
+                     value={newDevice.status}
+                     onChange={(e) => setNewDevice({ ...newDevice, status: e.target.value })}
+                     required
+>
+                     <option value="">Sélectionnez un statut</option>
+                     <option value="Disponible">Disponible</option>
+                    <option value="Non disponible">Non disponible</option>
+</select>
+
+
                 <button type="submit">Ajouter</button>
             </form>
 
             <div className="device-list">
-                <h2>Liste des Dispositifs</h2>
+                <h2>Liste des appareils</h2>
                 <input
                     type="text"
                     placeholder="Rechercher un dispositif..."
@@ -147,7 +153,7 @@ const DeviceManagement = () => {
                                     e.stopPropagation();
                                     handleDeleteDevice(device.id);
                                 }}
-                                style={{ marginLeft: '10px', color: 'red' }}
+                                style={{ marginLeft: '10px', color: 'white' }}
                             >
                                 Supprimer
                             </button>
@@ -184,7 +190,7 @@ const DeviceManagement = () => {
                                 onChange={(e) => setSelectedDevice({ ...selectedDevice, status: e.target.value })}
                             />
                         </label>
-                        <button type="submit">Mettre à jour</button>
+                        <button type="submit">Modifier</button>
                     </form>
                 </div>
             )}

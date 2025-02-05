@@ -1,4 +1,3 @@
-/* Variables de couleur pour faciliter la personnalisation */
 :root {
   --primary-color: #007bff;
   --background-color: #f9f9f9;
@@ -11,7 +10,7 @@
   --border-radius: 5px;
 }
 
-/* Conteneur principal de l'inscription */
+
 .inscription-container {
   max-width: 400px;
   margin: 2rem auto;
@@ -22,19 +21,17 @@
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
 }
 
-/* Titre du formulaire */
+
 .inscription-container h2 {
   text-align: center;
   margin-bottom: 20px;
   color: var(--text-color);
 }
 
-/* Groupes de formulaires */
 .form-group {
   margin-bottom: 15px;
 }
 
-/* Labels */
 label {
   display: block;
   margin-bottom: 5px;
@@ -42,7 +39,7 @@ label {
   font-weight: bold;
 }
 
-/* Champs de saisie */
+
 input {
   width: 100%;
   padding: var(--input-padding);
@@ -52,7 +49,7 @@ input {
   font-size: 1rem;
 }
 
-/* Bouton de soumission */
+
 button {
   width: 100%;
   padding: var(--button-padding);
@@ -74,7 +71,6 @@ button:disabled {
   cursor: not-allowed;
 }
 
-/* Messages d'erreur et de succès */
 .error-message {
   color: var(--error-color);
   text-align: center;
@@ -87,7 +83,6 @@ button:disabled {
   margin-bottom: 10px;
 }
 
-/* Spinner d'attente */
 .spinner {
   display: inline-block;
   width: 20px;
@@ -104,7 +99,6 @@ button:disabled {
   }
 }
 
-/* Responsive Design */
 @media (max-width: 480px) {
   .inscription-container {
     padding: 15px;
